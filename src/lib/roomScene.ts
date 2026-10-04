@@ -67,7 +67,7 @@ export function createRoomScene(
   const pmrem = new THREE.PMREMGenerator(renderer);
   const envTex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   scene.environment = envTex;
-  scene.environmentIntensity = 0.12;
+  scene.environmentIntensity = 0.3;
 
   const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 60);
 
@@ -92,9 +92,9 @@ export function createRoomScene(
 
   const FIN: [number, number] = [0.55, 0.92];
 
-  const matFloor = std("#2a2826", "#8a6a47", FIN, { roughness: 0.55 });
-  const matWall = std("#3b3936", "#c8b9a3", FIN, { roughness: 0.95 });
-  const matSlat = std("#34322f", "#5c4631", FIN, { roughness: 0.6 });
+  const matFloor = std("#46423d", "#8a6a47", FIN, { roughness: 0.55 });
+  const matWall = std("#5d5852", "#c8b9a3", FIN, { roughness: 0.95 });
+  const matSlat = std("#4b4742", "#5c4631", FIN, { roughness: 0.6 });
   const matSkirt = std("#2e2c2a", "#2a2018", FIN);
 
   /* ---------- room shell ---------- */
@@ -161,10 +161,10 @@ export function createRoomScene(
   }
 
   /* ---------- lights ---------- */
-  const hemi = new THREE.HemisphereLight("#8da0bd", "#1a1511", 0.25);
+  const hemi = new THREE.HemisphereLight("#9fb0c8", "#2a2420", 0.7);
   scene.add(hemi);
 
-  const coolKey = new THREE.DirectionalLight("#9fb4d6", 0.9);
+  const coolKey = new THREE.DirectionalLight("#a9bddc", 1.9);
   coolKey.position.set(-4, 7, 8);
   scene.add(coolKey);
 
@@ -409,8 +409,8 @@ export function createRoomScene(
       new THREE.Vector3(0.0, 2.8, 15.0),
       new THREE.Vector3(-1.6, 2.6, 11.0),
       new THREE.Vector3(-4.0, 2.3, 7.6),
-      new THREE.Vector3(-1.4, 1.9, 5.6),
-      new THREE.Vector3(1.9, 1.7, 5.4),
+      new THREE.Vector3(-1.6, 1.9, 6.4),
+      new THREE.Vector3(0.9, 2.2, 8.4),
     ],
     false,
     "catmullrom",
@@ -422,7 +422,7 @@ export function createRoomScene(
       new THREE.Vector3(0, 1.5, -1.5),
       new THREE.Vector3(0.4, 1.2, -1.0),
       new THREE.Vector3(0.6, 1.0, -1.2),
-      new THREE.Vector3(0.0, 1.4, -2.2),
+      new THREE.Vector3(0.0, 1.7, -1.4),
     ],
     false,
     "catmullrom",
@@ -441,6 +441,7 @@ export function createRoomScene(
   let raf = 0;
   let running = true;
   let lastRender = -1;
+  let lastT = performance.now();
 
   const apply = (p: number) => {
     camPath.getPoint(clamp(p), tmpA);
@@ -469,11 +470,11 @@ export function createRoomScene(
     const warm = smooth(0.55, 0.92, p);
     const dayK = smooth(0.62, 0.95, p);
     sun.intensity = 3.4 * dayK;
-    coolKey.intensity = 0.9 - 0.62 * warm;
-    hemi.intensity = 0.25 + 0.45 * warm;
+    coolKey.intensity = 1.9 - 1.4 * warm;
+    hemi.intensity = 0.7 - 0.05 * warm;
     lampLight.intensity = 7 * smooth(0.6, 0.8, p);
     pendantLight.intensity = 7 * smooth(0.64, 0.84, p);
-    scene.environmentIntensity = 0.12 + 0.3 * warm;
+    scene.environmentIntensity = 0.3 + 0.15 * warm;
     renderer.toneMappingExposure = 0.9 + 0.25 * warm;
     matGlass.color.copy(glassFrom).lerp(glassTo, dayK);
     (scene.background as THREE.Color).copy(bgFrom).lerp(bgTo, warm);
@@ -484,7 +485,10 @@ export function createRoomScene(
     if (!running) return;
     raf = requestAnimationFrame(render);
     // critically-damped glide gives the scroll its cinematic inertia
-    current += (target - current) * (reducedMotion ? 1 : 0.075);
+    const now = performance.now();
+    const dt = Math.min(0.25, (now - lastT) / 1000);
+    lastT = now;
+    current += (target - current) * (reducedMotion ? 1 : 1 - Math.exp(-dt * 5.5));
     if (Math.abs(target - current) < 0.00005) current = target;
     if (Math.abs(current - lastRender) < 0.00002 && lastRender >= 0) return;
     lastRender = current;

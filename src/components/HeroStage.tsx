@@ -13,7 +13,7 @@ const CHAPTERS = [
     n: "I",
     title: "The shell",
     body: "Every room begins as nothing: concrete, cold light, and a lot of possibility.",
-    range: [0.04, 0.26],
+    range: [0.075, 0.26],
   },
   {
     n: "II",
