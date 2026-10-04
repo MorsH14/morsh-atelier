@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { createRoomScene, type RoomScene } from "@/lib/roomScene";
-import { generalEnquiryUrl } from "@/lib/whatsapp";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -110,6 +109,17 @@ export default function HeroStage() {
             See your room<br />
             <em>before it exists.</em>
           </h1>
+          <p className="stage-sub">
+            Furniture and rooms designed with you, shown in 3D first, then made to order in Nigeria.
+          </p>
+          <div className="stage-actions">
+            <a className="btn btn-solid" href="#contact">
+              Get a free 3D concept
+            </a>
+            <a className="link-btn" href="#collections">
+              Browse the collection
+            </a>
+          </div>
           <p className="scroll-cue">
             <span /> Scroll
           </p>
@@ -134,8 +144,8 @@ export default function HeroStage() {
           <a className="btn btn-solid" href="#collections">
             Explore the collection
           </a>
-          <a className="btn btn-ghost" href={generalEnquiryUrl("Hello MORSH Atelier, I'd like to start a room.")} target="_blank" rel="noreferrer">
-            Start your room on WhatsApp
+          <a className="btn btn-ghost" href="#contact">
+            Get a free 3D concept
           </a>
         </div>
 

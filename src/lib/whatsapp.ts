@@ -3,7 +3,24 @@ import { PRODUCTS, naira } from "./products";
 
 export type SelectionItem = { id: string; qty: number };
 
-export function buildWhatsAppUrl(items: SelectionItem[], name?: string) {
+export type Brief = { name: string; city?: string; room?: string; budget?: string; note?: string };
+
+export function buildBriefUrl(b: Brief) {
+  const text = [
+    `Hello MORSH Atelier, I'm ${b.name}.`,
+    "",
+    "I'd like a free 3D concept for my space.",
+    b.room ? `Room: ${b.room}` : null,
+    b.city ? `City: ${b.city}` : null,
+    b.budget ? `Budget: ${b.budget}` : null,
+    b.note ? `\n${b.note}` : null,
+  ]
+    .filter((l) => l !== null)
+    .join("\n");
+  return `https://wa.me/${BRAND.whatsapp}?text=${encodeURIComponent(text)}`;
+}
+
+export function buildWhatsAppUrl(items: SelectionItem[], name?: string, city?: string) {
   const lines = items
     .map((it) => {
       const p = PRODUCTS.find((x) => x.id === it.id);
@@ -18,7 +35,7 @@ export function buildWhatsAppUrl(items: SelectionItem[], name?: string) {
   }, 0);
 
   const text = [
-    `Hello MORSH Atelier${name ? `, I'm ${name}` : ""}.`,
+    `Hello MORSH Atelier${name ? `, I'm ${name}` : ""}${city ? ` from ${city}` : ""}.`,
     "",
     "I'd like to talk about these pieces:",
     ...lines,

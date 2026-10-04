@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSelection } from "@/context/Selection";
 import { PRODUCTS, naira } from "@/lib/products";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
@@ -8,6 +8,8 @@ import Plate from "./Plate";
 
 export default function SelectionDrawer() {
   const { items, open, setOpen, setQty, remove } = useSelection();
+  const [name, setName] = useState("");
+  const [city, setCity] = useState("");
 
   useEffect(() => {
     if (!open) return;
@@ -65,10 +67,19 @@ export default function SelectionDrawer() {
             <span>Estimated total</span>
             <b>{naira(total)}</b>
           </div>
-          <p className="note">Prices are estimates in Naira. Final quote is confirmed with you on WhatsApp.</p>
+          {rows.length > 0 && (
+            <div className="drawer-who">
+              <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" aria-label="Your name" autoComplete="given-name" />
+              <input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Your city" aria-label="Your city" autoComplete="address-level2" />
+            </div>
+          )}
+          <p className="note">
+            Nothing is charged here. Prices are starting estimates; you get a final itemised quote on WhatsApp and
+            decide from there.
+          </p>
           <a
             className={`btn btn-solid btn-block ${rows.length ? "" : "disabled"}`}
-            href={rows.length ? buildWhatsAppUrl(items) : undefined}
+            href={rows.length ? buildWhatsAppUrl(items, name.trim() || undefined, city.trim() || undefined) : undefined}
             target="_blank"
             rel="noreferrer"
             aria-disabled={!rows.length}
