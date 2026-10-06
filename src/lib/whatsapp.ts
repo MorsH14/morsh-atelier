@@ -1,7 +1,8 @@
 import { BRAND } from "./brand";
-import { PRODUCTS, naira } from "./products";
+import { PRODUCTS, describeConfig, naira, priceFor, type Config } from "./products";
 
-export type SelectionItem = { id: string; qty: number };
+/** `key` is unique per product + configuration, so two sofa colours are two lines. */
+export type SelectionItem = { key: string; id: string; qty: number; cfg?: Config };
 
 export type Brief = { name: string; city?: string; room?: string; budget?: string; note?: string };
 
@@ -21,17 +22,16 @@ export function buildBriefUrl(b: Brief) {
 }
 
 export function buildWhatsAppUrl(items: SelectionItem[], name?: string, city?: string) {
-  const lines = items
-    .map((it) => {
-      const p = PRODUCTS.find((x) => x.id === it.id);
-      if (!p) return null;
-      return `• ${p.name} (${p.ref}) × ${it.qty} — ${naira(p.price * it.qty)}`;
-    })
-    .filter(Boolean);
+  const lines = items.flatMap((it) => {
+    const p = PRODUCTS.find((x) => x.id === it.id);
+    if (!p) return [];
+    const spec = describeConfig(p, it.cfg);
+    return [`• ${p.name} (${p.ref}) × ${it.qty} — ${naira(priceFor(p, it.cfg) * it.qty)}${spec ? `\n   ${spec}` : ""}`];
+  });
 
   const total = items.reduce((sum, it) => {
     const p = PRODUCTS.find((x) => x.id === it.id);
-    return sum + (p ? p.price * it.qty : 0);
+    return sum + (p ? priceFor(p, it.cfg) * it.qty : 0);
   }, 0);
 
   const text = [

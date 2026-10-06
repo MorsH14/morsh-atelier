@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSelection } from "@/context/Selection";
-import { PRODUCTS, naira } from "@/lib/products";
+import { PRODUCTS, describeConfig, naira, priceFor } from "@/lib/products";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import Plate from "./Plate";
 
@@ -21,7 +21,7 @@ export default function SelectionDrawer() {
   const rows = items
     .map((i) => ({ ...i, p: PRODUCTS.find((x) => x.id === i.id)! }))
     .filter((r) => r.p);
-  const total = rows.reduce((s, r) => s + r.p.price * r.qty, 0);
+  const total = rows.reduce((s, r) => s + priceFor(r.p, r.cfg) * r.qty, 0);
 
   return (
     <>
@@ -42,21 +42,21 @@ export default function SelectionDrawer() {
         ) : (
           <ul className="drawer-list">
             {rows.map((r) => (
-              <li key={r.id}>
+              <li key={r.key}>
                 <div className="drawer-thumb">
                   <Plate kind={r.p.kind} />
                 </div>
                 <div className="drawer-info">
                   <b>{r.p.name}</b>
-                  <small>{r.p.ref}</small>
+                  <small>{describeConfig(r.p, r.cfg) || r.p.ref}</small>
                   <div className="qty">
-                    <button onClick={() => setQty(r.id, r.qty - 1)} aria-label="Decrease">−</button>
+                    <button onClick={() => setQty(r.key, r.qty - 1)} aria-label="Decrease">−</button>
                     <span>{r.qty}</span>
-                    <button onClick={() => setQty(r.id, r.qty + 1)} aria-label="Increase">+</button>
-                    <button className="rm" onClick={() => remove(r.id)}>Remove</button>
+                    <button onClick={() => setQty(r.key, r.qty + 1)} aria-label="Increase">+</button>
+                    <button className="rm" onClick={() => remove(r.key)}>Remove</button>
                   </div>
                 </div>
-                <div className="drawer-price">{naira(r.p.price * r.qty)}</div>
+                <div className="drawer-price">{naira(priceFor(r.p, r.cfg) * r.qty)}</div>
               </li>
             ))}
           </ul>

@@ -1,13 +1,7 @@
 import BriefForm from "@/components/BriefForm";
 import HeroStage from "@/components/HeroStage";
-import Nav from "@/components/Nav";
+import Shell from "@/components/Shell";
 import ProductCard from "@/components/ProductCard";
-import SelectionDrawer from "@/components/SelectionDrawer";
-import SmoothScroll from "@/components/SmoothScroll";
-import Reveal from "@/components/Reveal";
-import WhatsAppFab from "@/components/WhatsAppFab";
-import { SelectionProvider } from "@/context/Selection";
-import { BRAND } from "@/lib/brand";
 import { ABOUT, FAQ, PROJECTS, PROMISES, TESTIMONIALS } from "@/lib/content";
 import { PRODUCTS } from "@/lib/products";
 
@@ -38,10 +32,7 @@ const PROCESS = [
 
 export default function Home() {
   return (
-    <SelectionProvider>
-      <SmoothScroll />
-      <Reveal />
-      <Nav />
+    <Shell>
       <main>
         <HeroStage />
 
@@ -223,19 +214,6 @@ export default function Home() {
           </div>
         </section>
       </main>
-
-      <footer className="foot wrap">
-        <div className="logo">
-          {BRAND.name}
-          <span>{BRAND.suffix}</span>
-        </div>
-        <p>{BRAND.tagline}</p>
-        <p>WhatsApp {BRAND.whatsappDisplay}</p>
-        <small>© {new Date().getFullYear()} MORSH Atelier</small>
-      </footer>
-
-      <WhatsAppFab />
-      <SelectionDrawer />
-    </SelectionProvider>
+    </Shell>
   );
 }
