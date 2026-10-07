@@ -1,0 +1,122 @@
+{
+  "oro-sofa": [
+    {
+      "id": "ivory",
+      "name": "Ivory & brass",
+      "fabric": "ivory",
+      "frame": "brass"
+    },
+    {
+      "id": "forest",
+      "name": "Forest & walnut",
+      "fabric": "forest",
+      "frame": "walnut"
+    },
+    {
+      "id": "cocoa",
+      "name": "Cocoa & noir",
+      "fabric": "cocoa",
+      "frame": "black"
+    }
+  ],
+  "kora-table": [
+    {
+      "id": "walnut",
+      "name": "Walnut & travertine",
+      "fabric": "walnut",
+      "frame": "travertine"
+    },
+    {
+      "id": "oak",
+      "name": "Oak & stone",
+      "fabric": "oak",
+      "frame": "stone"
+    },
+    {
+      "id": "ebony",
+      "name": "Ebony & charcoal",
+      "fabric": "ebony",
+      "frame": "charcoal"
+    }
+  ],
+  "lume-lamp": [
+    {
+      "id": "linen",
+      "name": "Linen & brass",
+      "fabric": "linen",
+      "frame": "brass"
+    },
+    {
+      "id": "sand",
+      "name": "Sand & noir",
+      "fabric": "sand",
+      "frame": "black"
+    },
+    {
+      "id": "smoke",
+      "name": "Smoke & nickel",
+      "fabric": "smoke",
+      "frame": "nickel"
+    }
+  ],
+  "sela-chair": [
+    {
+      "id": "ivory",
+      "name": "Ivory & brass",
+      "fabric": "ivory",
+      "frame": "brass"
+    },
+    {
+      "id": "terracotta",
+      "name": "Terracotta & noir",
+      "fabric": "terracotta",
+      "frame": "black"
+    },
+    {
+      "id": "forest",
+      "name": "Forest & brass",
+      "fabric": "forest",
+      "frame": "brass"
+    }
+  ],
+  "nuit-bed": [
+    {
+      "id": "ivory",
+      "name": "Ivory & walnut",
+      "fabric": "ivory",
+      "frame": "walnut"
+    },
+    {
+      "id": "cocoa",
+      "name": "Cocoa & oak",
+      "fabric": "cocoa",
+      "frame": "oak"
+    },
+    {
+      "id": "charcoal",
+      "name": "Charcoal & ebony",
+      "fabric": "charcoal",
+      "frame": "ebony"
+    }
+  ],
+  "arc-console": [
+    {
+      "id": "walnut",
+      "name": "Walnut & brass",
+      "fabric": "walnut",
+      "frame": "brass"
+    },
+    {
+      "id": "oak",
+      "name": "Oak & noir",
+      "fabric": "oak",
+      "frame": "black"
+    },
+    {
+      "id": "ebony",
+      "name": "Ebony & nickel",
+      "fabric": "ebony",
+      "frame": "nickel"
+    }
+  ]
+}

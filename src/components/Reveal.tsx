@@ -2,10 +2,10 @@
 
 import { useEffect } from "react";
 
-/** Adds .in to every .reveal element as it enters the viewport. */
+/** Adds .in to every .reveal / .reveal-img element as it enters the viewport. */
 export default function Reveal() {
   useEffect(() => {
-    const els = document.querySelectorAll<HTMLElement>(".reveal");
+    const els = document.querySelectorAll<HTMLElement>(".reveal, .reveal-img");
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       els.forEach((e) => e.classList.add("in"));
       return;

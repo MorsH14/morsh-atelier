@@ -61,8 +61,8 @@ export function createRoomScene(
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color("#0b0a09");
-  scene.fog = new THREE.Fog("#0b0a09", 14, 30);
+  scene.background = new THREE.Color("#241d17");
+  scene.fog = new THREE.Fog("#241d17", 14, 30);
 
   const pmrem = new THREE.PMREMGenerator(renderer);
   const envTex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
@@ -92,10 +92,10 @@ export function createRoomScene(
 
   const FIN: [number, number] = [0.55, 0.92];
 
-  const matFloor = std("#46423d", "#8a6a47", FIN, { roughness: 0.55 });
-  const matWall = std("#5d5852", "#c8b9a3", FIN, { roughness: 0.95 });
-  const matSlat = std("#4b4742", "#5c4631", FIN, { roughness: 0.6 });
-  const matSkirt = std("#2e2c2a", "#2a2018", FIN);
+  const matFloor = std("#8a7d6c", "#8a6a47", FIN, { roughness: 0.55 });
+  const matWall = std("#a89c8b", "#c8b9a3", FIN, { roughness: 0.95 });
+  const matSlat = std("#8c7a64", "#5c4631", FIN, { roughness: 0.6 });
+  const matSkirt = std("#4a443c", "#2a2018", FIN);
 
   /* ---------- room shell ---------- */
   const room = new THREE.Group();
@@ -140,7 +140,7 @@ export function createRoomScene(
   room.add(skirt);
 
   // window on the right wall: glowing pane + mullions
-  const matGlass = new THREE.MeshBasicMaterial({ color: C("#1a2330") });
+  const matGlass = new THREE.MeshBasicMaterial({ color: C("#f4dcb4") });
   const glass = new THREE.Mesh(new THREE.PlaneGeometry(4.6, 4.4), matGlass);
   glass.rotation.y = -Math.PI / 2;
   glass.position.set(5.96, 2.7, -0.4);
@@ -161,10 +161,10 @@ export function createRoomScene(
   }
 
   /* ---------- lights ---------- */
-  const hemi = new THREE.HemisphereLight("#9fb0c8", "#2a2420", 0.7);
+  const hemi = new THREE.HemisphereLight("#f1e3cc", "#4a3d30", 0.85);
   scene.add(hemi);
 
-  const coolKey = new THREE.DirectionalLight("#a9bddc", 1.9);
+  const coolKey = new THREE.DirectionalLight("#f3e2c6", 2.1);
   coolKey.position.set(-4, 7, 8);
   scene.add(coolKey);
 
@@ -216,10 +216,10 @@ export function createRoomScene(
     metalness: 1,
     roughness: 0.28,
   });
-  const matBoucle = std("#5f5d5a", "#e3d9c8", FIN, { roughness: 1 });
-  const matWalnut = std("#4a4744", "#4b2f1c", FIN, { roughness: 0.42 });
-  const matTravertine = std("#55524e", "#d9ccb4", FIN, { roughness: 0.7 });
-  const matRug = std("#3a3835", "#a89a85", FIN, { roughness: 1 });
+  const matBoucle = std("#bdb4a6", "#e3d9c8", FIN, { roughness: 1 });
+  const matWalnut = std("#8a6e57", "#4b2f1c", FIN, { roughness: 0.42 });
+  const matTravertine = std("#b5ab9a", "#d9ccb4", FIN, { roughness: 0.7 });
+  const matRug = std("#9b9184", "#a89a85", FIN, { roughness: 1 });
 
   // Rug
   {
@@ -432,9 +432,9 @@ export function createRoomScene(
   /* ---------- progress application ---------- */
   const tmpA = new THREE.Vector3();
   const tmpB = new THREE.Vector3();
-  const glassFrom = C("#1a2330");
+  const glassFrom = C("#f4dcb4");
   const glassTo = C("#ffe9c4");
-  const bgFrom = C("#0b0a09");
+  const bgFrom = C("#241d17");
   const bgTo = C("#14100c");
   let current = reducedMotion ? 1 : 0;
   let target = reducedMotion ? 1 : 0;

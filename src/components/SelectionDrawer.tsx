@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useSelection } from "@/context/Selection";
-import { PRODUCTS, describeConfig, naira, priceFor } from "@/lib/products";
+import { LOOKS, PRODUCTS, describeConfig, naira, priceFor, stillOf } from "@/lib/products";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
-import Plate from "./Plate";
+import Image from "next/image";
 
 export default function SelectionDrawer() {
   const { items, open, setOpen, setQty, remove } = useSelection();
@@ -44,7 +44,12 @@ export default function SelectionDrawer() {
             {rows.map((r) => (
               <li key={r.key}>
                 <div className="drawer-thumb">
-                  <Plate kind={r.p.kind} />
+                  <Image
+                    src={stillOf(r.p.id, (LOOKS[r.p.id]?.find((l) => l.fabric === r.cfg?.fabric && l.frame === r.cfg?.frame) ?? LOOKS[r.p.id]?.[0])?.id ?? "")}
+                    alt=""
+                    width={92}
+                    height={115}
+                  />
                 </div>
                 <div className="drawer-info">
                   <b>{r.p.name}</b>

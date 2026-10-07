@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { BUILDERS, type Mats } from "./productModels";
+import { applySurfaces } from "./surfaces";
 import type { Choice, Kind } from "./products";
 
 /**
@@ -17,7 +18,16 @@ export type Viewer = {
   resize: () => void;
   dispose: () => void;
 };
-export type ViewerOptions = { lowPower?: boolean; reducedMotion?: boolean };
+export type ViewerOptions = {
+  lowPower?: boolean;
+  reducedMotion?: boolean;
+  /** Catalogue still: fixed camera, no rotation, no controls. */
+  still?: boolean;
+  /** Multiplier on the camera distance (below 1 = closer). */
+  distance?: number;
+  /** Camera azimuth in degrees for stills (0 = straight on). */
+  azimuth?: number;
+};
 
 export const hasModel = (kind: Kind) => kind in BUILDERS;
 
@@ -30,7 +40,7 @@ export function createProductViewer(
   opts: ViewerOptions = {}
 ): Viewer {
   if (!hasModel(kind)) throw new Error(`No 3D model for "${kind}" yet`);
-  const { lowPower = false, reducedMotion = false } = opts;
+  const { lowPower = false, reducedMotion = false, still = false, distance = 1, azimuth } = opts;
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: !lowPower, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, lowPower ? 1.25 : 2));
@@ -45,10 +55,10 @@ export function createProductViewer(
   const pmrem = new THREE.PMREMGenerator(renderer);
   const envTex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   scene.environment = envTex;
-  scene.environmentIntensity = 0.55;
+  scene.environmentIntensity = 0.4;
 
-  scene.add(new THREE.HemisphereLight("#fff4e4", "#2a221a", 0.55));
-  const key = new THREE.DirectionalLight("#ffe2bd", 2.4);
+  scene.add(new THREE.HemisphereLight("#fff4e4", "#2a221a", 0.42));
+  const key = new THREE.DirectionalLight("#ffe2bd", 2.0);
   key.position.set(4, 7, 5);
   key.castShadow = true;
   key.shadow.mapSize.set(lowPower ? 1024 : 2048, lowPower ? 1024 : 2048);
@@ -64,13 +74,34 @@ export function createProductViewer(
   rim.position.set(-5, 3, -4);
   scene.add(rim);
 
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), new THREE.ShadowMaterial({ opacity: 0.38 }));
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), new THREE.ShadowMaterial({ opacity: 0.2 }));
   floor.rotation.x = -Math.PI / 2;
   floor.receiveShadow = true;
   scene.add(floor);
 
-  const matA = new THREE.MeshStandardMaterial({ roughness: 1 });
-  const matB = new THREE.MeshStandardMaterial();
+  // a soft pool of shade right under the piece, so it sits on the floor instead of floating
+  const contactTex = (() => {
+    const c = document.createElement("canvas");
+    c.width = c.height = 256;
+    const g = c.getContext("2d")!;
+    const grd = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+    grd.addColorStop(0, "rgba(20,12,4,0.55)");
+    grd.addColorStop(0.55, "rgba(20,12,4,0.22)");
+    grd.addColorStop(1, "rgba(20,12,4,0)");
+    g.fillStyle = grd;
+    g.fillRect(0, 0, 256, 256);
+    return new THREE.CanvasTexture(c);
+  })();
+  const contact = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1),
+    new THREE.MeshBasicMaterial({ map: contactTex, transparent: true, depthWrite: false })
+  );
+  contact.rotation.x = -Math.PI / 2;
+  contact.position.y = 0.004;
+  scene.add(contact);
+
+  const matA = new THREE.MeshPhysicalMaterial({ roughness: 1 });
+  const matB = new THREE.MeshPhysicalMaterial();
   let extras: THREE.Material[] = [];
   const mats: Mats = {
     a: matA,
@@ -82,17 +113,7 @@ export function createProductViewer(
     },
   };
 
-  const paint = (c: ViewConfig) => {
-    matA.color.set(c.fabric.hex);
-    matA.roughness = c.fabric.rough ?? 1;
-    matA.metalness = c.fabric.metal ? 1 : 0;
-    // a lampshade glows: it is lit from inside
-    matA.emissive.set(kind === "lamp" ? c.fabric.hex : "#000000");
-    matA.emissiveIntensity = kind === "lamp" ? 0.85 : 0;
-    matB.color.set(c.frame.hex);
-    matB.metalness = c.frame.metal ? 1 : 0;
-    matB.roughness = c.frame.rough ?? 0.5;
-  };
+  const paint = (c: ViewConfig) => applySurfaces(matA, matB, c.fabric, c.frame, kind);
 
   let model: THREE.Group | null = null;
   let width = initial.w;
@@ -123,6 +144,9 @@ export function createProductViewer(
     box.setFromObject(model);
     box.getCenter(ctr);
     box.getSize(dim);
+    contact.scale.set(dim.x * 1.28, dim.z * 1.45, 1);
+    contact.position.x = ctr.x;
+    contact.position.z = ctr.z;
   };
   paint(initial);
   rebuild(initial.w);
@@ -132,7 +156,7 @@ export function createProductViewer(
   const viewPos = (v: ViewName): THREE.Vector3 => {
     // the diagonal matters because the default view looks at the piece from a corner
     const ext = Math.max(Math.hypot(dim.x, dim.z) * 0.9, dim.y * 1.15);
-    const d = ext * 2.3 + 1.2;
+    const d = (ext * 2.3 + 1.2) * distance;
     const y = ctr.y;
     switch (v) {
       case "front":
@@ -143,8 +167,13 @@ export function createProductViewer(
         return new THREE.Vector3(ctr.x - d * 0.45, y + 0.9, ctr.z - d * 0.9);
       case "detail":
         return new THREE.Vector3(ctr.x + dim.x * 0.38, y + 0.35, ctr.z + dim.z / 2 + ext * 0.75 + 0.6);
-      default:
+      default: {
+        if (azimuth !== undefined) {
+          const a = (azimuth * Math.PI) / 180;
+          return new THREE.Vector3(ctr.x + Math.sin(a) * d, y + 0.75, ctr.z + Math.cos(a) * d);
+        }
         return new THREE.Vector3(ctr.x + d * 0.62, y + 1.1, ctr.z + d * 0.82);
+      }
     }
   };
   camera.position.copy(viewPos("angle"));
@@ -157,7 +186,8 @@ export function createProductViewer(
   controls.enableZoom = false; // keep wheel/pinch free so the page still scrolls
   controls.minPolarAngle = 0.35;
   controls.maxPolarAngle = Math.PI / 2 - 0.04;
-  controls.autoRotate = !reducedMotion;
+  controls.autoRotate = !reducedMotion && !still;
+  controls.enabled = !still;
   controls.autoRotateSpeed = 0.9;
   controls.addEventListener("start", () => (controls.autoRotate = false));
 
@@ -221,6 +251,9 @@ export function createProductViewer(
       disposeModel();
       matA.dispose();
       matB.dispose();
+      contact.geometry.dispose();
+      (contact.material as THREE.Material).dispose();
+      contactTex.dispose();
       floor.geometry.dispose();
       (floor.material as THREE.Material).dispose();
       envTex.dispose();

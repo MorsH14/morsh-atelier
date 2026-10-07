@@ -98,7 +98,7 @@ export default function HeroStage() {
   }, []);
 
   return (
-    <section ref={wrap} className="stage" id="top" aria-label="A room transforming as you scroll">
+    <section ref={wrap} className="stage dark" id="top" aria-label="A room transforming as you scroll">
       <div className="stage-sticky">
         {fallback ? <div className="stage-fallback" /> : <canvas ref={canvas} className="stage-canvas" />}
         <div className="stage-vignette" />

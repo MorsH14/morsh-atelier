@@ -1,0 +1,56 @@
+{
+  "wide": [
+    {
+      "slug": "oro-sofa",
+      "x": 58.3,
+      "y": 63.4
+    },
+    {
+      "slug": "kora-table",
+      "x": 61.6,
+      "y": 75.2
+    },
+    {
+      "slug": "lume-lamp",
+      "x": 38.6,
+      "y": 54.1
+    },
+    {
+      "slug": "sela-chair",
+      "x": 88.5,
+      "y": 67.1
+    },
+    {
+      "slug": "arc-console",
+      "x": 20.4,
+      "y": 63.8
+    }
+  ],
+  "tall": [
+    {
+      "slug": "oro-sofa",
+      "x": 52.8,
+      "y": 57.5
+    },
+    {
+      "slug": "kora-table",
+      "x": 54.4,
+      "y": 66.8
+    },
+    {
+      "slug": "lume-lamp",
+      "x": 23,
+      "y": 50.5
+    },
+    {
+      "slug": "sela-chair",
+      "x": 97.3,
+      "y": 60.7
+    },
+    {
+      "slug": "arc-console",
+      "x": -4.2,
+      "y": 57.6
+    }
+  ]
+}

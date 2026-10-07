@@ -1,26 +1,20 @@
+import Image from "next/image";
 import BriefForm from "@/components/BriefForm";
+import Collection from "@/components/Collection";
 import HeroStage from "@/components/HeroStage";
 import Shell from "@/components/Shell";
-import ProductCard from "@/components/ProductCard";
-import { ABOUT, FAQ, PROJECTS, PROMISES, TESTIMONIALS } from "@/lib/content";
-import { PRODUCTS } from "@/lib/products";
+import ShopTheRoom from "@/components/ShopTheRoom";
+import TryIt from "@/components/TryIt";
+import { ABOUT, FAQ, PROMISES, TESTIMONIALS } from "@/lib/content";
+import { PRODUCTS, stillOf } from "@/lib/products";
+import { surfaceOf } from "@/lib/textures";
 
-const SERVICES = [
-  {
-    n: "01",
-    t: "See it before you buy it",
-    d: "We build your room in 3D so you can walk through it, swap fabrics, move the sofa, and change your mind as often as you need to. It costs nothing to start.",
-  },
-  {
-    n: "02",
-    t: "Furniture made for your space",
-    d: "Sofas, beds, consoles and tables made to order by skilled makers, sized to your room, in the finishes you choose.",
-  },
-  {
-    n: "03",
-    t: "The whole room, handled",
-    d: "From layout and lighting to the last cushion. You talk to one person, and the room comes together as one.",
-  },
+const MARQUEE = [
+  "Designed in 3D first",
+  "Made to order in Nigeria",
+  "Your cloth, your finish",
+  "A free 3D concept of your room",
+  "See it before you buy it",
 ];
 
 const PROCESS = [
@@ -30,61 +24,135 @@ const PROCESS = [
   ["We make it and set it up", "Your pieces are made, delivered and placed. The room you approved is the room you get."],
 ];
 
+const SURFACE_LABEL = { boucle: "Bouclé", velvet: "Velvet", linen: "Linen", wood: "Solid wood", stone: "Stone", metal: "Metal", plain: "Finish" } as const;
+
+/** Every distinct cloth and finish across the collection, for the swatch library. */
+function materials() {
+  const seen = new Map<string, { name: string; hex: string; kind: keyof typeof SURFACE_LABEL }>();
+  for (const p of PRODUCTS)
+    for (const c of [...(p.fabrics ?? []), ...(p.frames ?? [])])
+      if (!seen.has(c.name)) seen.set(c.name, { name: c.name, hex: c.hex, kind: surfaceOf(c.name, c.metal) });
+  return [...seen.values()];
+}
+
+const Pill = ({ src, pos = "50% 58%" }: { src: string; pos?: string }) => (
+  <span className="pill" aria-hidden>
+    <Image src={src} alt="" fill sizes="240px" style={{ objectFit: "cover", objectPosition: pos }} />
+  </span>
+);
+
 export default function Home() {
+  const mats = materials();
   return (
     <Shell>
       <main>
         <HeroStage />
 
-        <section className="manifesto wrap">
-          <p className="eyebrow reveal">Why people choose us</p>
-          <p className="manifesto-text reveal">
-            A beautiful room shouldn&rsquo;t be a gamble. We show you <em>exactly</em> how it will look, in 3D, before a single
-            piece is made.
-          </p>
-        </section>
-
-        <section id="services" className="services section">
-          <div className="wrap">
-            <div className="section-head">
-              <p className="eyebrow reveal">What we do</p>
-              <h2 className="h2 reveal">
-                Design you can <em>walk through</em>.
-              </h2>
-            </div>
-            <ul className="svc-list">
-              {SERVICES.map((s) => (
-                <li key={s.n} className="svc reveal">
-                  <span className="svc-n">{s.n}</span>
-                  <h3>{s.t}</h3>
-                  <p>{s.d}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        <section id="collections" className="wrap section">
-          <div className="section-head">
-            <p className="eyebrow reveal">The collection</p>
-            <h2 className="h2 reveal">Made to order, priced for real life.</h2>
-          </div>
-          <div className="grid">
-            {PRODUCTS.map((p, i) => (
-              <ProductCard key={p.id} p={p} index={i} />
+        <div className="marquee" aria-hidden>
+          <div className="marquee-track">
+            {[0, 1].map((k) => (
+              <div className="marquee-item" key={k}>
+                {MARQUEE.map((t) => (
+                  <span key={t} style={{ display: "contents" }}>
+                    <span>{t}</span>
+                    <i>◆</i>
+                  </span>
+                ))}
+              </div>
             ))}
           </div>
-          <p className="grid-note reveal">
-            Save the pieces you like, then send them to me on WhatsApp. Nothing is charged. We&rsquo;ll talk sizes, fabrics
-            and delivery, and you decide.
+        </div>
+
+        <section className="statement wrap">
+          <div>
+            <p className="eyebrow reveal">Why people choose us</p>
+            <p className="statement-text reveal">
+              A room should feel <Pill src={stillOf("oro-sofa", "ivory")} /> effortless, <Pill src={stillOf("sela-chair", "terracotta")} pos="50% 50%" /> warm,
+              and entirely <Pill src={stillOf("kora-table", "walnut")} /> <em>yours.</em>
+            </p>
+            <p className="statement-foot reveal">
+              We show you exactly how it will look, in 3D, before a single piece is made. No guessing, no surprises.
+            </p>
+          </div>
+          <figure className="statement-img reveal-img">
+            <Image src="/room/living-m.jpg" alt="A living room modelled in 3D, with a cream sofa and a terracotta chair" fill sizes="(max-width: 1020px) 80vw, 33vw" />
+          </figure>
+        </section>
+
+        <section id="room" className="room-sec wrap">
+          <div className="section-head">
+            <p className="eyebrow reveal">Shop the room</p>
+            <h2 className="h2 reveal">
+              Every piece you see <em>is for sale.</em>
+            </h2>
+          </div>
+          <div className="reveal-img">
+            <ShopTheRoom />
+          </div>
+          <p className="room-caption reveal">
+            <span>A living room, modelled in our studio.</span>
+            <span>Tap a piece to turn it around in 3D.</span>
           </p>
         </section>
 
-        <section id="about" className="about section">
-          <div className="wrap about-grid">
-            <div className="ph ph-portrait reveal" role="img" aria-label="Portrait of MorsH">
-              <span>{ABOUT.photoNote}</span>
+        <section id="collections" className="wrap section" style={{ paddingTop: 0 }}>
+          <Collection products={PRODUCTS} />
+          <p className="grid-note reveal">
+            Save the pieces you like, then send them to me on WhatsApp. Nothing is charged. We&rsquo;ll talk sizes,
+            fabrics and delivery, and you decide.
+          </p>
+        </section>
+
+        <section className="try dark section">
+          <div className="wrap">
+            <TryIt />
+          </div>
+        </section>
+
+        <section id="materials" className="wrap section">
+          <div className="section-head">
+            <p className="eyebrow reveal">Fabrics &amp; finishes</p>
+            <h2 className="h2 reveal">Choose what it&rsquo;s made of.</h2>
+          </div>
+          <div className="mats">
+            {mats.map((m, i) => (
+              <div key={m.name} className="mat reveal" style={{ ["--d" as string]: `${(i % 6) * 60}ms` }}>
+                <div className={`mat-chip ${m.kind}`} style={{ backgroundColor: m.hex }} />
+                <b>{m.name}</b>
+                <small>{SURFACE_LABEL[m.kind]}</small>
+              </div>
+            ))}
+          </div>
+          <p className="mats-note reveal">
+            Swatches are shown on screen, so colours vary a little between devices. For anything you&rsquo;re unsure of,
+            we&rsquo;ll send you a physical sample before you decide.
+          </p>
+        </section>
+
+        <section id="process" className="alt section">
+          <div className="wrap">
+            <div className="section-head">
+              <p className="eyebrow reveal">How it works</p>
+              <h2 className="h2 reveal">Four simple steps.</h2>
             </div>
+            <ol className="steps">
+              {PROCESS.map(([t, d], i) => (
+                <li key={t} className="step reveal">
+                  <span>{String(i + 1).padStart(2, "0")}</span>
+                  <h3>{t}</h3>
+                  <p>{d}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        <section id="about" className="section">
+          <div className="wrap about-grid">
+            <figure className="about-img reveal-img">
+              <Image src="/room/living-m.jpg" alt="A living room modelled in the MORSH Atelier studio" fill sizes="(max-width: 1020px) 100vw, 42vw" />
+              <figcaption>Modelled in our studio</figcaption>
+            </figure>
             <div className="about-copy">
               <p className="eyebrow reveal">Meet the maker</p>
               <h2 className="h2 reveal">{ABOUT.heading}</h2>
@@ -106,67 +174,24 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="projects" className="wrap section">
-          <div className="section-head">
-            <p className="eyebrow reveal">Recent rooms</p>
-            <h2 className="h2 reveal">From render to real life.</h2>
-          </div>
-          <div className="projects">
-            {PROJECTS.map((p) => (
-              <article key={p.id} className="project reveal">
-                <div className="ba">
-                  <div className="ph" role="img" aria-label={`${p.title}, 3D concept`}>
-                    <span>3D concept</span>
-                  </div>
-                  <div className="ph ph-b" role="img" aria-label={`${p.title}, finished room`}>
-                    <span>Finished room</span>
-                  </div>
-                </div>
-                <div className="project-copy">
-                  <h3>{p.title}</h3>
-                  <small>{p.place}</small>
-                  <p>{p.brief}</p>
-                  <p className="project-res">{p.result}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section id="process" className="services section">
+        <section id="promise" className="alt section">
           <div className="wrap">
             <div className="section-head">
-              <p className="eyebrow reveal">How it works</p>
-              <h2 className="h2 reveal">Four simple steps.</h2>
+              <p className="eyebrow reveal">Our promise</p>
+              <h2 className="h2 reveal">You&rsquo;re in control, every step.</h2>
             </div>
-            <ol className="steps">
-              {PROCESS.map(([t, d], i) => (
-                <li key={t} className="step reveal">
-                  <span>{String(i + 1).padStart(2, "0")}</span>
-                  <h3>{t}</h3>
-                  <p>{d}</p>
+            <ul className="promises">
+              {PROMISES.map((p) => (
+                <li key={p.t} className="promise reveal">
+                  <h3>{p.t}</h3>
+                  <p>{p.d}</p>
                 </li>
               ))}
-            </ol>
+            </ul>
           </div>
         </section>
 
-        <section id="promise" className="wrap section">
-          <div className="section-head">
-            <p className="eyebrow reveal">Our promise</p>
-            <h2 className="h2 reveal">You&rsquo;re in control, every step.</h2>
-          </div>
-          <ul className="promises">
-            {PROMISES.map((p) => (
-              <li key={p.t} className="promise reveal">
-                <h3>{p.t}</h3>
-                <p>{p.d}</p>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section className="quotes section">
+        <section className="quotes">
           <div className="wrap">
             <ul className="quote-list">
               {TESTIMONIALS.map((t) => (
@@ -181,7 +206,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="faq" className="wrap section">
+        <section id="faq" className="wrap section" style={{ paddingTop: 0 }}>
           <div className="section-head">
             <p className="eyebrow reveal">Good questions</p>
             <h2 className="h2 reveal">Before you reach out.</h2>
@@ -196,7 +221,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="contact" className="cta">
+        <section id="contact" className="cta dark">
           <div className="wrap cta-grid">
             <div className="cta-copy">
               <p className="eyebrow reveal">Start here · free</p>

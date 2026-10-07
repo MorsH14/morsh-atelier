@@ -14,7 +14,8 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       <Reveal />
       <Nav />
       {children}
-      <footer className="foot wrap">
+      <footer className="foot-wrap dark">
+        <div className="foot wrap">
         <div className="logo">
           {BRAND.name}
           <span>{BRAND.suffix}</span>
@@ -22,6 +23,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         <p>{BRAND.tagline}</p>
         <p>WhatsApp {BRAND.whatsappDisplay}</p>
         <small>© {new Date().getFullYear()} MORSH Atelier</small>
+        </div>
       </footer>
       <WhatsAppFab />
       <SelectionDrawer />
